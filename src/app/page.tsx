@@ -22,14 +22,8 @@ export default function Home() {
           <div className="flex items-center gap-1">
             <ThemeToggle />
             <Sheet>
-              <SheetTrigger asChild>
-                <div
-                  role="button"
-                  tabIndex={0}
-                  className="inline-flex items-center justify-center rounded-md h-9 w-9 hover:bg-accent hover:text-accent-foreground cursor-pointer"
-                >
-                  <Menu className="h-5 w-5" />
-                </div>
+              <SheetTrigger className="inline-flex items-center justify-center rounded-md h-9 w-9 hover:bg-accent hover:text-accent-foreground cursor-pointer">
+                <Menu className="h-5 w-5" />
               </SheetTrigger>
               <SheetContent side="right" className="w-80 p-0 overflow-y-auto">
                 <SidebarForm />
