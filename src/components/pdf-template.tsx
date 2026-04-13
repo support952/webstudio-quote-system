@@ -64,6 +64,12 @@ export function PdfTemplate({ data }: PdfTemplateProps) {
     data.customServices.filter((cs) => cs.isRecurring).reduce((sum, cs) => sum + getCustomPrice(cs), 0);
   const discountAmount = (oneTimeSubtotal * data.discount) / 100;
   const total = oneTimeSubtotal - discountAmount;
+  const vatRate = 0.18;
+  const showVat = data.currency === "ILS" && data.includeVat;
+  const vatAmount = showVat ? total * vatRate : 0;
+  const totalWithVat = total + vatAmount;
+  const recurringVat = showVat ? recurringTotal * vatRate : 0;
+  const recurringWithVat = recurringTotal + recurringVat;
   const allEmpty = selectedServices.length === 0 && data.customServices.length === 0;
 
   const today = new Date();
@@ -250,11 +256,31 @@ export function PdfTemplate({ data }: PdfTemplateProps) {
             <Text style={s.totalLabel}>{t("pdfTotal", lang)}</Text>
             <Text style={s.totalValue}>{formatPrice(total, data.currency)}</Text>
           </View>
+          {showVat && (
+            <View style={[s.summaryRow, { marginTop: 4 }]}>
+              <Text style={s.summaryLabel}>{t("pdfVat", lang)}</Text>
+              <Text style={s.summaryValue}>{formatPrice(vatAmount, data.currency)}</Text>
+            </View>
+          )}
+          {showVat && (
+            <View style={[s.summaryRow, { marginTop: 4, paddingTop: 6, borderTopWidth: 2, borderTopColor: GOLD }]}>
+              <Text style={[s.totalLabel, { fontSize: 13 }]}>{t("pdfTotalWithVat", lang)}</Text>
+              <Text style={[s.totalValue, { fontSize: 13, color: GOLD }]}>{formatPrice(totalWithVat, data.currency)}</Text>
+            </View>
+          )}
           {recurringTotal > 0 && (
             <View style={[s.summaryRow, { marginTop: 12, paddingTop: 10, borderTopWidth: 1, borderTopColor: "#E5E7EB" }]}>
               <Text style={[s.summaryLabel, { fontWeight: 700, color: DARK }]}>{t("pdfRetainer", lang)}</Text>
               <Text style={[s.summaryValue, { color: GOLD }]}>
                 {formatPrice(recurringTotal, data.currency)} {t("pdfPerMonth", lang)}
+              </Text>
+            </View>
+          )}
+          {showVat && recurringTotal > 0 && (
+            <View style={s.summaryRow}>
+              <Text style={[s.summaryLabel, { fontWeight: 700, color: DARK }]}>{t("pdfRetainer", lang)} + {t("pdfVat", lang)}</Text>
+              <Text style={[s.summaryValue, { color: GOLD }]}>
+                {formatPrice(recurringWithVat, data.currency)} {t("pdfPerMonth", lang)}
               </Text>
             </View>
           )}

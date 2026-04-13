@@ -90,6 +90,12 @@ export function SidebarForm() {
     }, 0) + data.customServices.filter((cs) => cs.isRecurring).reduce((sum, cs) => sum + getCustomPrice(cs), 0);
 
   const afterDiscount = oneTimeTotal - (oneTimeTotal * data.discount) / 100;
+  const vatRate = 0.18;
+  const showVat = data.currency === "ILS" && data.includeVat;
+  const oneTimeVat = showVat ? afterDiscount * vatRate : 0;
+  const oneTimeWithVat = afterDiscount + oneTimeVat;
+  const recurringVat = showVat ? recurringTotal * vatRate : 0;
+  const recurringWithVat = recurringTotal + recurringVat;
   const symbol = getCurrencySymbol(data.currency);
   const suffix = data.currency === "ILS" ? "/ לחודש" : "/ month";
 
@@ -251,6 +257,18 @@ export function SidebarForm() {
           </CardContent>
         </Card>
 
+        {/* מע"מ — רק בשקלים */}
+        {data.currency === "ILS" && (
+          <Card>
+            <CardContent className="py-3">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <Checkbox checked={data.includeVat} onCheckedChange={(checked) => update({ includeVat: !!checked })} />
+                <span className="text-sm font-medium">הוסף מע״מ (18%)</span>
+              </label>
+            </CardContent>
+          </Card>
+        )}
+
         {/* הערות */}
         <Card>
           <CardHeader className="pb-3"><CardTitle className="text-sm font-medium">הערות</CardTitle></CardHeader>
@@ -289,10 +307,28 @@ export function SidebarForm() {
               <span className="font-bold text-base text-[#C5A065]">{formatPrice(afterDiscount, data.currency)}</span>
             </div>
           )}
+          {showVat && (
+            <div className="flex justify-between items-center text-xs pt-1 border-t border-white/20">
+              <span>מע״מ (18%)</span>
+              <span className="font-bold text-base text-[#C5A065]">{formatPrice(oneTimeVat, data.currency)}</span>
+            </div>
+          )}
+          {showVat && (
+            <div className="flex justify-between items-center text-sm pt-1 border-t border-white/20">
+              <span>סה״כ כולל מע״מ</span>
+              <span className="font-bold text-lg text-[#C5A065]">{formatPrice(oneTimeWithVat, data.currency)}</span>
+            </div>
+          )}
           {recurringTotal > 0 && (
             <div className="flex justify-between items-center text-sm pt-2 border-t border-white/20">
               <span className="flex items-center gap-1"><Repeat className="h-3 w-3" />ריטיינר חודשי</span>
               <span className="font-bold text-base text-[#C5A065]">{formatPrice(recurringTotal, data.currency)} {suffix}</span>
+            </div>
+          )}
+          {showVat && recurringTotal > 0 && (
+            <div className="flex justify-between items-center text-xs pt-1 border-t border-white/20">
+              <span className="flex items-center gap-1"><Repeat className="h-3 w-3" />ריטיינר + מע״מ</span>
+              <span className="font-bold text-base text-[#C5A065]">{formatPrice(recurringWithVat, data.currency)} {suffix}</span>
             </div>
           )}
         </div>

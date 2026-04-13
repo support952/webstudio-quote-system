@@ -25,6 +25,7 @@ export interface QuoteData {
   customPrices: Record<string, number>;
   recurringOverrides: Record<string, boolean>;
   customServices: CustomService[];
+  includeVat: boolean;
 }
 
 export const defaultQuoteData: QuoteData = {
@@ -39,6 +40,7 @@ export const defaultQuoteData: QuoteData = {
   customPrices: {},
   recurringOverrides: {},
   customServices: [],
+  includeVat: false,
 };
 
 export const QuoteContext = createContext<{

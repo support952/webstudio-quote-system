@@ -38,6 +38,8 @@ const translations = {
   },
   pdfNotes: { he: "הערות", en: "Notes" },
   pdfPerMonth: { he: "/ לחודש", en: "/ month" },
+  pdfVat: { he: 'מע"מ (18%)', en: "VAT (18%)" },
+  pdfTotalWithVat: { he: 'סה"כ כולל מע"מ', en: "Total Including VAT" },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
